@@ -61,15 +61,15 @@ type Comment struct {
 func HandleEvent(event string, body []byte) error {
 	switch event {
 	case "issues", "pull_request":
-		return HandleOpenedEvent(body)
+		return handleOpenedEvent(body)
 	case "issue_comment":
-		return HandleCommentEvent(body)
+		return handleCommentEvent(body)
 	default:
 		panic("unrecognised incoming event")
 	}
 }
 
-func HandleOpenedEvent(body []byte) error {
+func handleOpenedEvent(body []byte) error {
 	var payload OpenedEvent
 
 	err := json.Unmarshal(body, &payload)
@@ -84,7 +84,7 @@ func HandleOpenedEvent(body []byte) error {
 	return nil
 }
 
-func HandleCommentEvent(body []byte) error {
+func handleCommentEvent(body []byte) error {
 	var payload CommentEvent
 
 	err := json.Unmarshal(body, &payload)
