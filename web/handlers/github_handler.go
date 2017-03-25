@@ -9,6 +9,10 @@ import (
 )
 
 func GitHubHandler(w http.ResponseWriter, r *http.Request) {
+	event := r.Header.Get("X-GitHub-Event")
+
+	fmt.Printf("event: %s\n\n", event)
+
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		// TODO
