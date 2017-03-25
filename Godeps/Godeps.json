@@ -3,7 +3,12 @@
 	"GoVersion": "go1.8",
 	"GodepVersion": "v79",
 	"Packages": [
-		"./..."
+		"./cmd/stamper"
 	],
-	"Deps": []
+	"Deps": [
+		{
+			"ImportPath": "github.com/mulib/middleware",
+			"Rev": "364bf11b040c6164cc1ed59b2f2557a89086de33"
+		}
+	]
 }
