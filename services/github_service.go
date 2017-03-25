@@ -2,7 +2,9 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
+
+	"github.com/tombell/stamper/services/clients"
 )
 
 // parse incoming webhook type
@@ -19,8 +21,6 @@ import (
 
 // add the label to the issue/pull request with the specified label
 // https://developer.github.com/v3/issues/#edit-an-issue
-
-// -----------------------------------------------------------------------------
 
 type OpenedEvent struct {
 	Action      string     `json:"action"`
@@ -56,20 +56,33 @@ type Comment struct {
 	Body string `json:"body"`
 }
 
-// -----------------------------------------------------------------------------
-
-func HandleEvent(event string, body []byte) error {
-	switch event {
-	case "issues", "pull_request":
-		return handleOpenedEvent(body)
-	case "issue_comment":
-		return handleCommentEvent(body)
-	default:
-		panic("unrecognised incoming event")
-	}
+type GitHubService struct {
+	Client *clients.GitHubClient
+	Logger *log.Logger
 }
 
-func handleOpenedEvent(body []byte) error {
+func NewGitHubService(token string, l *log.Logger) *GitHubService {
+	Service = &GitHubService{
+		Client: clients.NewGitHubClient(token),
+		Logger: l,
+	}
+	return Service
+}
+
+var Service *GitHubService
+
+func (s *GitHubService) HandleEvent(event string, body []byte) error {
+	switch event {
+	case "issues", "pull_request":
+		return s.handleOpenedEvent(body)
+	case "issue_comment":
+		return s.handleCommentEvent(body)
+	}
+
+	return nil
+}
+
+func (s *GitHubService) handleOpenedEvent(body []byte) error {
 	var payload OpenedEvent
 
 	err := json.Unmarshal(body, &payload)
@@ -77,14 +90,27 @@ func handleOpenedEvent(body []byte) error {
 		return err
 	}
 
-	fmt.Println("Issue or Pull Request Opened:")
-	fmt.Println(payload)
-	fmt.Println("---")
+	s.Logger.Printf("Issue or Pull Request Opened by %s\n", payload.Sender.Login)
+
+	permission, err := s.Client.GetUserPermissions(
+		payload.Repository.FullName,
+		payload.Sender.Login,
+	)
+	if err != nil {
+		return err
+	}
+
+	s.Logger.Printf(
+		"Sender %s has %s access to %s\n",
+		payload.Sender.Login,
+		permission,
+		payload.Repository.FullName,
+	)
 
 	return nil
 }
 
-func handleCommentEvent(body []byte) error {
+func (s *GitHubService) handleCommentEvent(body []byte) error {
 	var payload CommentEvent
 
 	err := json.Unmarshal(body, &payload)
@@ -92,9 +118,22 @@ func handleCommentEvent(body []byte) error {
 		return err
 	}
 
-	fmt.Println("Issue or Pull Request Comment:")
-	fmt.Println(payload)
-	fmt.Println("---")
+	s.Logger.Printf("Issue or Pull Request Comment by %s\n", payload.Sender.Login)
+
+	permission, err := s.Client.GetUserPermissions(
+		payload.Repository.FullName,
+		payload.Sender.Login,
+	)
+	if err != nil {
+		return err
+	}
+
+	s.Logger.Printf(
+		"Sender %s has %s access to %s\n",
+		payload.Sender.Login,
+		permission,
+		payload.Repository.FullName,
+	)
 
 	return nil
 }

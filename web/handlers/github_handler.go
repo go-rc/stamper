@@ -6,12 +6,16 @@ import (
 	"net/http"
 
 	"github.com/tombell/stamper/services"
+	"github.com/tombell/stamper/web/middleware"
 )
 
 // GitHubHandler is the http.Handler for handling incoming GitHub webook
 // requests.
 func GitHubHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
+	srv, ok := r.Context().Value(middleware.GitHubServiceContextKey).(*services.GitHubService)
+	if !ok {
+		panic("could not get github service from request context")
+	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -21,8 +25,9 @@ func GitHubHandler(w http.ResponseWriter, r *http.Request) {
 
 	event := r.Header.Get("X-GitHub-Event")
 
-	err = services.HandleEvent(event, body)
+	err = srv.HandleEvent(event, body)
 	if err != nil {
+		// TODO
 		panic(err)
 	}
 

@@ -9,9 +9,7 @@ import (
 	"github.com/tombell/stamper/services"
 )
 
-type key string
-
-const GitHubServiceContextKey key = "ctxGitHubService"
+const GitHubServiceContextKey = contextKey("ctxGitHubService")
 
 func WithGitHubService(srv *services.GitHubService) mw.Middleware {
 	return func(h http.Handler) http.Handler {
