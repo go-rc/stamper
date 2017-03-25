@@ -1,19 +1,17 @@
 package handlers
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/tombell/stamper/services"
 )
 
 // GitHubHandler is the http.Handler for handling incoming GitHub webook
 // requests.
 func GitHubHandler(w http.ResponseWriter, r *http.Request) {
-	event := r.Header.Get("X-GitHub-Event")
-
-	fmt.Printf("event: %s\n\n", event)
+	var err error
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -21,15 +19,12 @@ func GitHubHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	var payload bytes.Buffer
+	event := r.Header.Get("X-GitHub-Event")
 
-	err = json.Indent(&payload, body, "", "  ")
+	err = services.HandleEvent(event, body)
 	if err != nil {
-		// TODO
 		panic(err)
 	}
-
-	fmt.Println(payload.String())
 
 	fmt.Fprintf(w, "OK")
 }
