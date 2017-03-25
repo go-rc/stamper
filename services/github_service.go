@@ -56,6 +56,10 @@ type Comment struct {
 	Body string `json:"body"`
 }
 
+type Installation struct {
+	ID int `json:"id"`
+}
+
 type GitHubService struct {
 	Client *clients.GitHubClient
 	Logger *log.Logger
