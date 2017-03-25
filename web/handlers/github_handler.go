@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+// GitHubHandler is the http.Handler for handling incoming GitHub webook
+// requests.
 func GitHubHandler(w http.ResponseWriter, r *http.Request) {
 	event := r.Header.Get("X-GitHub-Event")
 
