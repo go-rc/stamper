@@ -1,8 +1,7 @@
 # Stamper
 
-Stamper is a simple web service listening for incoming web hook requests from
-GitHub for opened issues/pull requests, and comments on issues/pull requests.
+Stamper is a simple [GitHub Integration](gh-integration) that will apply labels
+to issues (or pull requests) if the description, or a comment is added that
+contains a certain string.
 
-The idea is that Stamper will assign labels to the issue or pull request based
-on whether the issue/pull request body or issue/pull request comment contains a
-certain string.
+[gh-integration]: https://developer.github.com/early-access/integrations/
