@@ -1,8 +1,10 @@
 package clients
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -71,6 +73,37 @@ func (c *GitHubClient) GetPermissionLevel(nwo, login string) (string, error) {
 	}
 
 	return payload.Permission, nil
+}
+
+func (c *GitHubClient) AddLabelsToIssue(nwo string, number int, labels []string) error {
+	url := fmt.Sprintf("%s/repos/%s/issues/%d/labels", apiURL, nwo, number)
+
+	var buf io.ReadWriter
+	buf = new(bytes.Buffer)
+
+	err := json.NewEncoder(buf).Encode(labels)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", url, buf)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("token %s", c.token))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	_, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func generateJWT(integrationID string, privateKey []byte) (string, error) {

@@ -20,8 +20,8 @@ type Sender struct {
 }
 
 type Issue struct {
-	Body   string   `json:"body"`
-	Labels []string `json:"labels"`
+	Number int    `json:"number"`
+	Body   string `json:"body"`
 }
 
 type Comment struct {

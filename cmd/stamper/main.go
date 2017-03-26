@@ -16,6 +16,9 @@ func main() {
 	id := flag.String("id", "", "GitHub integration ID")
 	cert := flag.String("cert", "", "Path to GitHub integration private key")
 
+	needle := flag.String("needle", "", "String to find")
+	label := flag.String("label", "bug", "Label to add to the issue/pull request")
+
 	flag.Parse()
 
 	l := log.New(os.Stderr, "[stamper] ", log.Lshortfile)
@@ -23,7 +26,14 @@ func main() {
 
 	var err error
 
-	err = services.SetupGitHubService(*id, *cert, l)
+	cfg := &services.GitHubServiceConfig{
+		IntegrationID: *id,
+		Cert:          *cert,
+		Needle:        *needle,
+		Label:         *label,
+	}
+
+	err = services.SetupGitHubService(cfg, l)
 	if err != nil {
 		l.Fatal(err)
 	}

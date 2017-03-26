@@ -2,26 +2,39 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"strings"
 
 	"github.com/tombell/stamper/services/clients"
 )
 
+type GitHubServiceConfig struct {
+	IntegrationID string
+	Cert          string
+	Needle        string
+	Label         string
+}
+
 type GitHubService struct {
 	integrationID string
+	needle        string
+	label         string
 	privateKey    []byte
 	logger        *log.Logger
 }
 
-func SetupGitHubService(id, cert string, l *log.Logger) error {
-	key, err := ioutil.ReadFile(cert)
+func SetupGitHubService(cfg *GitHubServiceConfig, l *log.Logger) error {
+	key, err := ioutil.ReadFile(cfg.Cert)
 	if err != nil {
 		return err
 	}
 
 	Service = &GitHubService{
-		integrationID: id,
+		integrationID: cfg.IntegrationID,
+		needle:        cfg.Needle,
+		label:         cfg.Label,
 		privateKey:    key,
 		logger:        l,
 	}
@@ -37,6 +50,28 @@ func (srv *GitHubService) HandleEvent(event string, body []byte) error {
 		return err
 	}
 
+	var str string
+	var num int
+
+	if event == "issues" && payload.Action == "opened" {
+		str = payload.Issue.Body
+		num = payload.Issue.Number
+	} else if event == "pull_request" && payload.Action == "opened" {
+		str = payload.PullRequest.Body
+		num = payload.PullRequest.Number
+	} else if event == "issue_comment" && payload.Action == "created" {
+		str = payload.Comment.Body
+		num = payload.Issue.Number
+	} else {
+		srv.logger.Printf("event/action not handled")
+		return nil
+	}
+
+	if !strings.Contains(str, srv.needle) {
+		srv.logger.Printf("needle not found in body: %s", srv.needle)
+		return nil
+	}
+
 	client, err := clients.NewGitHubClient(payload.Installation.ID, srv.integrationID, srv.privateKey)
 	if err != nil {
 		return err
@@ -47,13 +82,19 @@ func (srv *GitHubService) HandleEvent(event string, body []byte) error {
 		return err
 	}
 
-	srv.logger.Printf(
-		"sender %s has %s access to %s\n",
-		payload.Sender.Login,
-		permission,
-		payload.Repository.FullName,
-	)
+	fmt.Println(permission)
 
+	if permission != "admin" && permission != "write" {
+		srv.logger.Printf("sender does not have permission: %s", permission)
+		return nil
+	}
+
+	err = client.AddLabelsToIssue(payload.Repository.FullName, num, []string{srv.label})
+	if err != nil {
+		return err
+	}
+
+	srv.logger.Printf("added label %s to issue", srv.label)
 	return nil
 }
 
