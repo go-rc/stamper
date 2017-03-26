@@ -21,9 +21,14 @@ func main() {
 	l := log.New(os.Stderr, "[stamper] ", log.Lshortfile)
 	l.Println("Starting...")
 
-	services.SetupGitHubService(*id, *cert, l)
+	var err error
 
-	err := web.Run(*host, *port, l)
+	err = services.SetupGitHubService(*id, *cert, l)
+	if err != nil {
+		l.Fatal(err)
+	}
+
+	err = web.Run(*host, *port, l)
 	if err != nil {
 		l.Fatal(err)
 	}

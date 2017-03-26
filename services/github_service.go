@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -9,11 +10,24 @@ import (
 )
 
 type GitHubService struct {
-	Logger *log.Logger
+	integrationID string
+	privateKey    []byte
+	logger        *log.Logger
 }
 
-func SetupGitHubService(id, cert string, l *log.Logger) {
-	Service = &GitHubService{Logger: l}
+func SetupGitHubService(id, cert string, l *log.Logger) error {
+	key, err := ioutil.ReadFile(cert)
+	if err != nil {
+		return err
+	}
+
+	Service = &GitHubService{
+		integrationID: id,
+		privateKey:    key,
+		logger:        l,
+	}
+
+	return nil
 }
 
 var Service *GitHubService
@@ -34,7 +48,7 @@ func (s *GitHubService) HandleEvent(event string, body []byte) error {
 		return err
 	}
 
-	s.Logger.Printf(
+	s.logger.Printf(
 		"sender %s has %s access to %s\n",
 		payload.Sender.Login,
 		permission,
