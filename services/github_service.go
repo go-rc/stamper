@@ -79,7 +79,7 @@ func (s *GitHubService) handleOpenedEvent(body []byte) error {
 		return err
 	}
 
-	s.Logger.Printf("Issue or Pull Request Opened by %s\n", payload.Sender.Login)
+	s.Logger.Printf("issue/pr opened by %s\n", payload.Sender.Login)
 
 	permission, err := s.Client.GetUserPermissions(
 		payload.Repository.FullName,
@@ -90,7 +90,7 @@ func (s *GitHubService) handleOpenedEvent(body []byte) error {
 	}
 
 	s.Logger.Printf(
-		"Sender %s has %s access to %s\n",
+		"sender %s has %s access to %s\n",
 		payload.Sender.Login,
 		permission,
 		payload.Repository.FullName,
@@ -107,7 +107,7 @@ func (s *GitHubService) handleCommentEvent(body []byte) error {
 		return err
 	}
 
-	s.Logger.Printf("Issue or Pull Request Comment by %s\n", payload.Sender.Login)
+	s.Logger.Printf("issue/pr comment by %s\n", payload.Sender.Login)
 
 	permission, err := s.Client.GetUserPermissions(
 		payload.Repository.FullName,
@@ -118,7 +118,7 @@ func (s *GitHubService) handleCommentEvent(body []byte) error {
 	}
 
 	s.Logger.Printf(
-		"Sender %s has %s access to %s\n",
+		"sender %s has %s access to %s\n",
 		payload.Sender.Login,
 		permission,
 		payload.Repository.FullName,
