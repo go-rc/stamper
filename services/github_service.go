@@ -12,7 +12,7 @@ type GitHubService struct {
 	Logger *log.Logger
 }
 
-func SetupGitHubService(l *log.Logger) {
+func SetupGitHubService(id, cert string, l *log.Logger) {
 	Service = &GitHubService{Logger: l}
 }
 
