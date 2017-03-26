@@ -15,7 +15,7 @@ func Run(host, port string, l *log.Logger) error {
 	key := ServiceContextKey("GitHubService")
 
 	http.Handle("/", http.HandlerFunc(RootHandler))
-	http.Handle("/github/",
+	http.Handle("/github",
 		middleware.Use(
 			http.HandlerFunc(GitHubHandler),
 			WithService(key, services.Service),
