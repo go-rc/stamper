@@ -12,18 +12,19 @@ import (
 func main() {
 	host := flag.String("host", "127.0.0.1", "Host to bind to")
 	port := flag.String("port", "8080", "Port to listen on")
-	token := flag.String("token", "", "GitHub API token")
+
+	// id := flag.String("id", "", "GitHub integration ID")
+	// cert := flag.String("cert", "", "GitHub integration private key")
 
 	flag.Parse()
 
 	l := log.New(os.Stderr, "[stamper] ", log.Lshortfile)
 	l.Println("Starting...")
 
-	var err error
+	// pass integration ID and private key...
+	services.SetupGitHubService(l)
 
-	services.SetupGitHubService(*token, l)
-
-	err = web.Run(*host, *port, l)
+	err := web.Run(*host, *port, l)
 	if err != nil {
 		l.Fatal(err)
 	}

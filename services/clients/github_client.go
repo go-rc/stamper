@@ -12,10 +12,6 @@ const (
 	previewMediaType = "application/vnd.github.korra-preview"
 )
 
-type UserPermission struct {
-	Permission string `json:"permission"`
-}
-
 type GitHubClient struct {
 	token string
 }
