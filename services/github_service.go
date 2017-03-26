@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-	"os"
 
 	"github.com/tombell/stamper/services/clients"
 )
@@ -40,10 +39,12 @@ func (s *GitHubService) HandleEvent(event string, body []byte) error {
 		return err
 	}
 
-	// TODO: using env temporarily
-	client := clients.NewGitHubClient(os.Getenv("GITHUB_API_TOKEN"))
+	client, err := clients.NewGitHubClient(payload.Installation.ID, s.integrationID, s.privateKey)
+	if err != nil {
+		return err
+	}
 
-	permission, err := client.GetUserPermissions(payload.Repository.FullName, payload.Sender.Login)
+	permission, err := client.GetPermissionLevel(payload.Repository.FullName, payload.Sender.Login)
 	if err != nil {
 		return err
 	}

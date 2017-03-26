@@ -19,6 +19,7 @@ func Run(host, port string, l *log.Logger) error {
 		middleware.Use(
 			http.HandlerFunc(GitHubHandler),
 			WithService(key, services.Service),
+			WithLogger(l),
 		),
 	)
 

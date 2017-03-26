@@ -14,7 +14,7 @@ func main() {
 	port := flag.String("port", "8080", "Port to listen on")
 
 	id := flag.String("id", "", "GitHub integration ID")
-	cert := flag.String("cert", "", "GitHub integration private key")
+	cert := flag.String("cert", "", "Path to GitHub integration private key")
 
 	flag.Parse()
 
