@@ -1,4 +1,4 @@
-package handlers
+package web
 
 import (
 	"fmt"
@@ -6,12 +6,13 @@ import (
 	"net/http"
 
 	"github.com/tombell/stamper/services"
-	"github.com/tombell/stamper/web/middleware"
 )
 
 // GitHubHandler is the http.Handler for incoming GitHub webhook requests.
 func GitHubHandler(w http.ResponseWriter, r *http.Request) {
-	srv, ok := r.Context().Value(middleware.GitHubServiceContextKey).(*services.GitHubService)
+	key := ServiceContextKey("GitHubService")
+
+	srv, ok := r.Context().Value(key).(*services.GitHubService)
 	if !ok {
 		// TODO
 		panic("could not get github service from request context")

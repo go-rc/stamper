@@ -5,20 +5,20 @@ import (
 	"log"
 	"net/http"
 
-	mw "github.com/mulib/middleware"
+	"github.com/mulib/middleware"
 
 	"github.com/tombell/stamper/services"
-	"github.com/tombell/stamper/web/handlers"
-	"github.com/tombell/stamper/web/middleware"
 )
 
 // Run sets up the http.Handlers and binds the server to a host/port.
 func Run(host, port string, l *log.Logger) error {
-	http.Handle("/", http.HandlerFunc(handlers.RootHandler))
+	key := ServiceContextKey("GitHubService")
+
+	http.Handle("/", http.HandlerFunc(RootHandler))
 	http.Handle("/github/",
-		mw.Use(
-			http.HandlerFunc(handlers.GitHubHandler),
-			middleware.WithGitHubService(services.Service),
+		middleware.Use(
+			http.HandlerFunc(GitHubHandler),
+			WithService(key, services.Service),
 		),
 	)
 
