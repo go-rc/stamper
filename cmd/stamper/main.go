@@ -21,7 +21,7 @@ func main() {
 
 	var err error
 
-	services.NewGitHubService(*token, l)
+	services.SetupGitHubService(*token, l)
 
 	err = web.Run(*host, *port, l)
 	if err != nil {

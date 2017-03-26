@@ -50,7 +50,7 @@ type GitHubService struct {
 	Logger *log.Logger
 }
 
-func NewGitHubService(token string, l *log.Logger) *GitHubService {
+func SetupGitHubService(token string, l *log.Logger) *GitHubService {
 	Service = &GitHubService{
 		Client: clients.NewGitHubClient(token),
 		Logger: l,
