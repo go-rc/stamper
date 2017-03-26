@@ -29,9 +29,7 @@ func SetupGitHubService(id, cert string, l *log.Logger) error {
 	return nil
 }
 
-var Service *GitHubService
-
-func (s *GitHubService) HandleEvent(event string, body []byte) error {
+func (srv *GitHubService) HandleEvent(event string, body []byte) error {
 	var payload EventPayload
 
 	err := json.Unmarshal(body, &payload)
@@ -39,7 +37,7 @@ func (s *GitHubService) HandleEvent(event string, body []byte) error {
 		return err
 	}
 
-	client, err := clients.NewGitHubClient(payload.Installation.ID, s.integrationID, s.privateKey)
+	client, err := clients.NewGitHubClient(payload.Installation.ID, srv.integrationID, srv.privateKey)
 	if err != nil {
 		return err
 	}
@@ -49,7 +47,7 @@ func (s *GitHubService) HandleEvent(event string, body []byte) error {
 		return err
 	}
 
-	s.logger.Printf(
+	srv.logger.Printf(
 		"sender %s has %s access to %s\n",
 		payload.Sender.Login,
 		permission,
@@ -58,3 +56,5 @@ func (s *GitHubService) HandleEvent(event string, body []byte) error {
 
 	return nil
 }
+
+var Service *GitHubService
