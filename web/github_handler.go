@@ -16,14 +16,16 @@ func GitHubHandler(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		// TODO
+		l.Fatal(err)
 	}
 
 	event := r.Header.Get("X-GitHub-Event")
 
 	err = srv.HandleEvent(event, body)
 	if err != nil {
-		panic(err)
+		// TODO
+		l.Fatal(err)
 	}
 
 	fmt.Fprintf(w, "OK")

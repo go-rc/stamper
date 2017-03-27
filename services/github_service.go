@@ -15,17 +15,18 @@ type GitHubServiceConfig struct {
 	Cert          string
 	Needle        string
 	Label         string
+	Logger        *log.Logger
 }
 
 type GitHubService struct {
 	integrationID string
 	needle        string
 	label         string
-	privateKey    []byte
 	logger        *log.Logger
+	privateKey    []byte
 }
 
-func SetupGitHubService(cfg *GitHubServiceConfig, l *log.Logger) error {
+func SetupGitHubService(cfg *GitHubServiceConfig) error {
 	key, err := ioutil.ReadFile(cfg.Cert)
 	if err != nil {
 		return err
@@ -35,9 +36,11 @@ func SetupGitHubService(cfg *GitHubServiceConfig, l *log.Logger) error {
 		integrationID: cfg.IntegrationID,
 		needle:        cfg.Needle,
 		label:         cfg.Label,
+		logger:        cfg.Logger,
 		privateKey:    key,
-		logger:        l,
 	}
+
+	Service.logger.Printf("GitHub service ready...")
 
 	return nil
 }

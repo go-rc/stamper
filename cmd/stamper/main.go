@@ -31,9 +31,10 @@ func main() {
 		Cert:          *cert,
 		Needle:        *needle,
 		Label:         *label,
+		Logger:        l,
 	}
 
-	err = services.SetupGitHubService(cfg, l)
+	err = services.SetupGitHubService(cfg)
 	if err != nil {
 		l.Fatal(err)
 	}

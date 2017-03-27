@@ -10,7 +10,6 @@ import (
 	"github.com/tombell/stamper/services"
 )
 
-// Run sets up the http.Handlers and binds the server to a host/port.
 func Run(host, port string, l *log.Logger) error {
 	key := ServiceContextKey("GitHubService")
 
